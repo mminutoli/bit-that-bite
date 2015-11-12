@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Bit that Bite - Marco Minutoli</title>
+        <link rel="stylesheet" href="http://mminutoli.github.io/theme/css/main.css" />
+        <link href="http://mminutoli.github.io/feeds/all.rss.xml" type="application/atom+xml" rel="alternate" title="Bit that Bite Atom Feed" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://mminutoli.github.io/">Bit that Bite </a></h1>
+                <nav><ul>
+                    <li><a href="http://mminutoli.github.io/pages/about-me.html">About Me</a></li>
+                    <li><a href="http://mminutoli.github.io/category/programming.html">Programming</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://mminutoli.github.io/howto-build-panda-on-archlinux.html">HowTo build PandA on ArchLinux</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2014-02-06T00:00:00+01:00">
+                Published: Thu 06 February 2014
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="http://mminutoli.github.io/author/marco-minutoli.html">Marco Minutoli</a>
+        </address>
+<p>In <a href="http://mminutoli.github.io/category/programming.html">Programming</a>.</p>
+<p>tags: <a href="http://mminutoli.github.io/tag/hls.html">HLS</a> <a href="http://mminutoli.github.io/tag/panda.html">PandA</a> <a href="http://mminutoli.github.io/tag/archlinux.html">ArchLinux</a> </p>
+</footer><!-- /.post-info --><p>Somedays ago I moved my laptop from Debian to ArchLinux. Once the
+installation has completed I started to install PandA (you know I want
+to work on my master thesis ;) ). So the instruction below assume you
+are starting from a fresh install.</p>
+<p>First of all let's start installing all the dependencies. Before to
+start you will need to enable the multilib repository in pacman. If
+you don't know how to do it follow <a href="https://wiki.archlinux.org/index.php/multilib">this
+link</a>.</p>
+<p>After a <code>pacman -Sy</code> you can proceed to install part of the
+dependencies with</p>
+<div class="highlight"><pre><span class="go">pacman -S base-devel multilib-devel boost iverilog</span>
+</pre></div>
+
+
+<p>After this command has completed you only miss mpfi that unfortunately
+isn't in the official repositories but you can find it in the AUR at
+<a href="https://aur.archlinux.org/packages/mpfi">this link</a>.</p>
+<p>If you have never installed something from AUR these are the
+instructions.</p>
+<div class="highlight"><pre><span class="go">wget https://aur.archlinux.org/packages/mp/mpfi/mpfi.tar.gz</span>
+<span class="go">tar xzf mpfi.tar.gz</span>
+<span class="go">cd mpfi</span>
+<span class="go">makepkg -s</span>
+<span class="go">sudo pacman -U mpfi-1.5-1-x86_64.pkg.tar.xz</span>
+</pre></div>
+
+
+<p>Anyway you can find more information
+<a href="https://wiki.archlinux.org/index.php/Arch_User_Repository">here</a></p>
+<p>As an option you can install verilator. Again it is not available on
+the official repos but you can find the PKGBUILD in the AUR
+<a href="https://aur.archlinux.org/packages/verilator/">here</a>.</p>
+<p>Once all the dependencies are installed you're ready to compile panda.
+Extract panda from the archive and procede with the usual configure,
+make and make install sequence :).</p>
+<div class="highlight"><pre><span class="go">./configure --with-gcc48=/usr/bin/gcc --enable-bambu \</span>
+<span class="go">--enable-icarus  --prefix=/opt/panda --enable-flopoco \</span>
+<span class="go">--enable-verilator --disable-release</span>
+
+<span class="go">make -j4</span>
+<span class="go">make install</span>
+</pre></div>
+
+
+<p>At the time of writing ArchLinux comes with gcc-4.8 but in the future
+you will need to pass --with-gcc49 :).</p>
+<p>The option --disable-release is necessary because ArchLinux doesn't
+distribute static libraries. Remember to remove --enable-verilator if
+you don't have it installed.</p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://mminutoli.github.io/howto-build-an-openrisc-toolchain.html" rel="bookmark"
+                           title="Permalink to HowTo build an openrisc toolchain">HowTo build an openrisc toolchain</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2013-08-01T00:00:00+02:00">
+                Published: Thu 01 August 2013
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="http://mminutoli.github.io/author/marco-minutoli.html">Marco Minutoli</a>
+        </address>
+<p>In <a href="http://mminutoli.github.io/category/programming.html">Programming</a>.</p>
+<p>tags: <a href="http://mminutoli.github.io/tag/openrisc.html">openrisc</a> <a href="http://mminutoli.github.io/tag/or1k.html">or1k</a> <a href="http://mminutoli.github.io/tag/gcc.html">gcc</a> <a href="http://mminutoli.github.io/tag/toolchain.html">toolchain</a> </p>
+</footer><!-- /.post-info -->                <p>Working on my master thesis I had the need to build the toolchain for
+openrisc. I found out that on the <a href="http://opencores.org/or1k/OR1K:Community_Portal">OpenRISC Community Portal
+Wiki</a> there is a
+guide to start with. The original information can be found
+<a href="http://opencores.org/or1k/OpenRISC_GNU_tool_chain#Installation_of_development_versions">here</a>.</p>
+<p>Unfortunately things never go smoothly as we want and this is ...</p>
+                <a class="readmore" href="http://mminutoli.github.io/howto-build-an-openrisc-toolchain.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+                </ol><!-- /#posts-list -->
+                </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="http://mminutoli.github.io/feeds/all.rss.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+
+                            <li><a href="https://github.com/mminutoli">github</a></li>
+                            <li><a href="https://plus.google.com/114057888676170815651">Google+</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-42899189-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+</body>
+</html>

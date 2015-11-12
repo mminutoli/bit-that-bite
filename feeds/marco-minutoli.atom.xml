@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Bit that Bite</title><link href="http://mminutoli.github.io/" rel="alternate"></link><link href="http://mminutoli.github.io/feeds/marco-minutoli.atom.xml" rel="self"></link><id>http://mminutoli.github.io/</id><updated>2014-02-06T00:00:00+01:00</updated><entry><title>HowTo build PandA on ArchLinux</title><link href="http://mminutoli.github.io/howto-build-panda-on-archlinux.html" rel="alternate"></link><updated>2014-02-06T00:00:00+01:00</updated><author><name>Marco Minutoli</name></author><id>tag:mminutoli.github.io,2014-02-06:howto-build-panda-on-archlinux.html</id><summary type="html">&lt;p&gt;Somedays ago I moved my laptop from Debian to ArchLinux. Once the
+installation has completed I started to install PandA (you know I want
+to work on my master thesis ;) ). So the instruction below assume you
+are starting from a fresh install.&lt;/p&gt;
+&lt;p&gt;First of all let's start installing all the dependencies. Before to
+start you will need to enable the multilib repository in pacman. If
+you don't know how to do it follow &lt;a href="https://wiki.archlinux.org/index.php/multilib"&gt;this
+link&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;After a &lt;code&gt;pacman -Sy&lt;/code&gt; you can proceed to install part of the
+dependencies with&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;pacman -S base-devel multilib-devel boost iverilog&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;After this command has completed you only miss mpfi that unfortunately
+isn't in the official repositories but you can find it in the AUR at
+&lt;a href="https://aur.archlinux.org/packages/mpfi"&gt;this link&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you have never installed something from AUR these are the
+instructions.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;wget https://aur.archlinux.org/packages/mp/mpfi/mpfi.tar.gz&lt;/span&gt;
+&lt;span class="go"&gt;tar xzf mpfi.tar.gz&lt;/span&gt;
+&lt;span class="go"&gt;cd mpfi&lt;/span&gt;
+&lt;span class="go"&gt;makepkg -s&lt;/span&gt;
+&lt;span class="go"&gt;sudo pacman -U mpfi-1.5-1-x86_64.pkg.tar.xz&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Anyway you can find more information
+&lt;a href="https://wiki.archlinux.org/index.php/Arch_User_Repository"&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;As an option you can install verilator. Again it is not available on
+the official repos but you can find the PKGBUILD in the AUR
+&lt;a href="https://aur.archlinux.org/packages/verilator/"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Once all the dependencies are installed you're ready to compile panda.
+Extract panda from the archive and procede with the usual configure,
+make and make install sequence :).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;./configure --with-gcc48=/usr/bin/gcc --enable-bambu \&lt;/span&gt;
+&lt;span class="go"&gt;--enable-icarus  --prefix=/opt/panda --enable-flopoco \&lt;/span&gt;
+&lt;span class="go"&gt;--enable-verilator --disable-release&lt;/span&gt;
+
+&lt;span class="go"&gt;make -j4&lt;/span&gt;
+&lt;span class="go"&gt;make install&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;At the time of writing ArchLinux comes with gcc-4.8 but in the future
+you will need to pass --with-gcc49 :).&lt;/p&gt;
+&lt;p&gt;The option --disable-release is necessary because ArchLinux doesn't
+distribute static libraries. Remember to remove --enable-verilator if
+you don't have it installed.&lt;/p&gt;</summary><category term="HLS"></category><category term="PandA"></category><category term="ArchLinux"></category></entry><entry><title>HowTo build an openrisc toolchain</title><link href="http://mminutoli.github.io/howto-build-an-openrisc-toolchain.html" rel="alternate"></link><updated>2013-08-01T00:00:00+02:00</updated><author><name>Marco Minutoli</name></author><id>tag:mminutoli.github.io,2013-08-01:howto-build-an-openrisc-toolchain.html</id><summary type="html">&lt;p&gt;Working on my master thesis I had the need to build the toolchain for
+openrisc. I found out that on the &lt;a href="http://opencores.org/or1k/OR1K:Community_Portal"&gt;OpenRISC Community Portal
+Wiki&lt;/a&gt; there is a
+guide to start with. The original information can be found
+&lt;a href="http://opencores.org/or1k/OpenRISC_GNU_tool_chain#Installation_of_development_versions"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Unfortunately things never go smoothly as we want and this is what I
+did to complete my task.&lt;/p&gt;
+&lt;p&gt;First of all we have to clone two git repository. The first one is an
+aggregate of tools (ie. binutils) and useful libraries
+(ie. newlib). The latter is a version of gcc with support to the
+openrisc architecture. To clone the two repositories run:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;mkdir -p $TOOLCHAIN_SRC_DIR&lt;/span&gt;
+&lt;span class="go"&gt;cd $TOOLCHAIN_SRC_DIR&lt;/span&gt;
+&lt;span class="go"&gt;git clone git://github.com/openrisc/or1k-src.git&lt;/span&gt;
+&lt;span class="go"&gt;git clone git://github.com/openrisc/or1k-gcc.git&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;where &lt;code&gt;$TOOLCHAIN_SRC_DIR&lt;/code&gt; is the path under your &lt;code&gt;$HOME&lt;/code&gt; where you
+want to store the toolchain code.&lt;/p&gt;
+&lt;p&gt;The instruction on the Wiki suggests to install the toolchain under
+&lt;code&gt;/opt/or1k-toolchain&lt;/code&gt; but I prefer to keep all my user stuff in my
+home directory so I am going to install in a different path under my
+user home directory.&lt;/p&gt;
+&lt;p&gt;The first step is to create two build directory both repositories.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;mkdir $TOOLCHAIN_SRC_DIR/bld-or1k-src&lt;/span&gt;
+&lt;span class="go"&gt;mkdir $TOOLCHAIN_SRC_DIR/bld-or1k-gcc&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The first step in building a toolchain is to build binutils:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;cd bld-or1k-src&lt;/span&gt;
+&lt;span class="go"&gt;../or1k-src/configure --target=or1k-elf --prefix=$HOME/or1k-toolchain --enable-shared \&lt;/span&gt;
+&lt;span class="go"&gt;  --disable-itcl --disable-tk --disable-tcl --disable-winsup --disable-libgui --disable-rda \&lt;/span&gt;
+&lt;span class="go"&gt;  --disable-sid --disable-sim --disable-gdb --with-sysroot --disable-newlib --disable-libgloss&lt;/span&gt;
+&lt;span class="go"&gt;make -j4&lt;/span&gt;
+&lt;span class="go"&gt;make install&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Once completed we are ready to build GCC for the first time:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;cd ../bld-or1k-gcc&lt;/span&gt;
+&lt;span class="go"&gt;../or1k-gcc/configure --target=or1k-elf --prefix=$HOME/or1k-toolchain \&lt;/span&gt;
+&lt;span class="go"&gt;  --enable-languages=c --disable-shared --disable-libssp&lt;/span&gt;
+&lt;span class="go"&gt;make -j4&lt;/span&gt;
+&lt;span class="go"&gt;make install&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Then we need to compile newlib and gdb, but before we start we need to
+had our freshly built GCC to the path:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;export PATH=$HOME/or1k-toolchain/bin:$PATH&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;and then&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;cd ../bld-or1k-src&lt;/span&gt;
+&lt;span class="go"&gt;../or1k-src/configure --target=or1k-elf --prefix=$HOME/or1k-toolchain \&lt;/span&gt;
+&lt;span class="go"&gt;  --enable-shared --disable-itcl \&lt;/span&gt;
+&lt;span class="go"&gt;  --disable-tk --disable-tcl --disable-winsup --disable-libgui --disable-rda --disable-sid \&lt;/span&gt;
+&lt;span class="go"&gt;  --enable-sim --disable-or1ksim \&lt;/span&gt;
+&lt;span class="go"&gt;  --enable-gdb  --with-sysroot --enable-newlib --enable-libgloss&lt;/span&gt;
+&lt;span class="go"&gt;make&lt;/span&gt;
+&lt;span class="go"&gt;make install&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Note that this time &lt;code&gt;make&lt;/code&gt; is missing the &lt;code&gt;-j&lt;/code&gt; option.&lt;/p&gt;
+&lt;p&gt;Now we are ready for the final step. Build GCC again but this time
+with C++ and newlib support:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="go"&gt;cd ../bld-or1k-gcc&lt;/span&gt;
+&lt;span class="go"&gt;../or1k-gcc/configure --target=or1k-elf --prefix=$HOME/or1k-toolchain \&lt;/span&gt;
+&lt;span class="go"&gt;  --enable-languages=c,c++ --disable-shared --disable-libssp --with-newlib&lt;/span&gt;
+&lt;span class="go"&gt;make -j4&lt;/span&gt;
+&lt;span class="go"&gt;make install&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The toolchain is built. The last thing to do is to open your text
+editor add the toolchain to the path in your .profile like this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# set PATH to include or1k-elf&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -d &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$HOME&lt;/span&gt;&lt;span class="s2"&gt;/or1k-toolchain/bin&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt; &lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+   &lt;span class="nv"&gt;PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$HOME&lt;/span&gt;&lt;span class="s2"&gt;/or1k-toolchain/bin:&lt;/span&gt;&lt;span class="nv"&gt;$PATH&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;That's it.&lt;/p&gt;</summary><category term="openrisc"></category><category term="or1k"></category><category term="gcc"></category><category term="toolchain"></category></entry></feed>

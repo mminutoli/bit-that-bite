@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Bit that Bite - toolchain</title>
+        <link rel="stylesheet" href="http://mminutoli.github.io/theme/css/main.css" />
+        <link href="http://mminutoli.github.io/feeds/all.rss.xml" type="application/atom+xml" rel="alternate" title="Bit that Bite Atom Feed" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="http://mminutoli.github.io/">Bit that Bite </a></h1>
+                <nav><ul>
+                    <li><a href="http://mminutoli.github.io/pages/about-me.html">About Me</a></li>
+                    <li><a href="http://mminutoli.github.io/category/programming.html">Programming</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://mminutoli.github.io/howto-build-an-openrisc-toolchain.html">HowTo build an openrisc toolchain</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2013-08-01T00:00:00+02:00">
+                Published: Thu 01 August 2013
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="http://mminutoli.github.io/author/marco-minutoli.html">Marco Minutoli</a>
+        </address>
+<p>In <a href="http://mminutoli.github.io/category/programming.html">Programming</a>.</p>
+<p>tags: <a href="http://mminutoli.github.io/tag/openrisc.html">openrisc</a> <a href="http://mminutoli.github.io/tag/or1k.html">or1k</a> <a href="http://mminutoli.github.io/tag/gcc.html">gcc</a> <a href="http://mminutoli.github.io/tag/toolchain.html">toolchain</a> </p>
+</footer><!-- /.post-info --><p>Working on my master thesis I had the need to build the toolchain for
+openrisc. I found out that on the <a href="http://opencores.org/or1k/OR1K:Community_Portal">OpenRISC Community Portal
+Wiki</a> there is a
+guide to start with. The original information can be found
+<a href="http://opencores.org/or1k/OpenRISC_GNU_tool_chain#Installation_of_development_versions">here</a>.</p>
+<p>Unfortunately things never go smoothly as we want and this is what I
+did to complete my task.</p>
+<p>First of all we have to clone two git repository. The first one is an
+aggregate of tools (ie. binutils) and useful libraries
+(ie. newlib). The latter is a version of gcc with support to the
+openrisc architecture. To clone the two repositories run:</p>
+<div class="highlight"><pre><span class="go">mkdir -p $TOOLCHAIN_SRC_DIR</span>
+<span class="go">cd $TOOLCHAIN_SRC_DIR</span>
+<span class="go">git clone git://github.com/openrisc/or1k-src.git</span>
+<span class="go">git clone git://github.com/openrisc/or1k-gcc.git</span>
+</pre></div>
+
+
+<p>where <code>$TOOLCHAIN_SRC_DIR</code> is the path under your <code>$HOME</code> where you
+want to store the toolchain code.</p>
+<p>The instruction on the Wiki suggests to install the toolchain under
+<code>/opt/or1k-toolchain</code> but I prefer to keep all my user stuff in my
+home directory so I am going to install in a different path under my
+user home directory.</p>
+<p>The first step is to create two build directory both repositories.</p>
+<div class="highlight"><pre><span class="go">mkdir $TOOLCHAIN_SRC_DIR/bld-or1k-src</span>
+<span class="go">mkdir $TOOLCHAIN_SRC_DIR/bld-or1k-gcc</span>
+</pre></div>
+
+
+<p>The first step in building a toolchain is to build binutils:</p>
+<div class="highlight"><pre><span class="go">cd bld-or1k-src</span>
+<span class="go">../or1k-src/configure --target=or1k-elf --prefix=$HOME/or1k-toolchain --enable-shared \</span>
+<span class="go">  --disable-itcl --disable-tk --disable-tcl --disable-winsup --disable-libgui --disable-rda \</span>
+<span class="go">  --disable-sid --disable-sim --disable-gdb --with-sysroot --disable-newlib --disable-libgloss</span>
+<span class="go">make -j4</span>
+<span class="go">make install</span>
+</pre></div>
+
+
+<p>Once completed we are ready to build GCC for the first time:</p>
+<div class="highlight"><pre><span class="go">cd ../bld-or1k-gcc</span>
+<span class="go">../or1k-gcc/configure --target=or1k-elf --prefix=$HOME/or1k-toolchain \</span>
+<span class="go">  --enable-languages=c --disable-shared --disable-libssp</span>
+<span class="go">make -j4</span>
+<span class="go">make install</span>
+</pre></div>
+
+
+<p>Then we need to compile newlib and gdb, but before we start we need to
+had our freshly built GCC to the path:</p>
+<div class="highlight"><pre><span class="go">export PATH=$HOME/or1k-toolchain/bin:$PATH</span>
+</pre></div>
+
+
+<p>and then</p>
+<div class="highlight"><pre><span class="go">cd ../bld-or1k-src</span>
+<span class="go">../or1k-src/configure --target=or1k-elf --prefix=$HOME/or1k-toolchain \</span>
+<span class="go">  --enable-shared --disable-itcl \</span>
+<span class="go">  --disable-tk --disable-tcl --disable-winsup --disable-libgui --disable-rda --disable-sid \</span>
+<span class="go">  --enable-sim --disable-or1ksim \</span>
+<span class="go">  --enable-gdb  --with-sysroot --enable-newlib --enable-libgloss</span>
+<span class="go">make</span>
+<span class="go">make install</span>
+</pre></div>
+
+
+<p>Note that this time <code>make</code> is missing the <code>-j</code> option.</p>
+<p>Now we are ready for the final step. Build GCC again but this time
+with C++ and newlib support:</p>
+<div class="highlight"><pre><span class="go">cd ../bld-or1k-gcc</span>
+<span class="go">../or1k-gcc/configure --target=or1k-elf --prefix=$HOME/or1k-toolchain \</span>
+<span class="go">  --enable-languages=c,c++ --disable-shared --disable-libssp --with-newlib</span>
+<span class="go">make -j4</span>
+<span class="go">make install</span>
+</pre></div>
+
+
+<p>The toolchain is built. The last thing to do is to open your text
+editor add the toolchain to the path in your .profile like this:</p>
+<div class="highlight"><pre><span class="c"># set PATH to include or1k-elf</span>
+<span class="k">if</span> <span class="o">[</span> -d <span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/or1k-toolchain/bin&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+   <span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/or1k-toolchain/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+<span class="k">fi</span>
+</pre></div>
+
+
+<p>That's it.</p>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="http://mminutoli.github.io/feeds/all.rss.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+
+                            <li><a href="https://github.com/mminutoli">github</a></li>
+                            <li><a href="https://plus.google.com/114057888676170815651">Google+</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-42899189-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = 'https://ssl.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+</body>
+</html>
